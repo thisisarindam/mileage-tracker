@@ -176,15 +176,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let html = '';
     data.forEach(entry => {
-      const dateStr = new Date(entry.entry_date).toLocaleDateString();
+      const dateObj = new Date(entry.entry_date);
+      const dateStr = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
       const station = entry.station_name || '-';
       const notes = entry.notes || '-';
+      
+      const distUnit = userSettings.unit_system === 'imperial' ? 'mi' : 'km';
+      const volUnit = userSettings.unit_system === 'imperial' ? 'gal' : 'L';
       
       html += `
         <tr>
           <td>${dateStr}</td>
-          <td>${parseFloat(entry.odometer_km).toLocaleString()}</td>
-          <td>${parseFloat(entry.litres).toFixed(2)}</td>
+          <td>${parseFloat(entry.odometer_km).toLocaleString()} ${distUnit}</td>
+          <td>${parseFloat(entry.litres).toFixed(2)} ${volUnit}</td>
           <td>${formatCurrency(entry.price_per_litre)}</td>
           <td>${formatCurrency(entry.total_cost)}</td>
           <td>${station}</td>
