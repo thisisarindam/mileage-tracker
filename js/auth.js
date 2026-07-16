@@ -35,19 +35,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     e.preventDefault();
     isSignUpMode = !isSignUpMode;
     if (isSignUpMode) {
-      formTitle.textContent = 'Sign Up';
+      if (formTitle) formTitle.textContent = 'Sign Up';
       submitBtn.textContent = 'Sign Up';
       toggleText.textContent = 'Already have an account?';
       toggleModeBtn.textContent = 'Sign In';
       magicLinkBtn.classList.add('d-none'); // Hide magic link on signup mode
     } else {
-      formTitle.textContent = 'Sign In';
+      if (formTitle) formTitle.textContent = 'Sign In';
       submitBtn.textContent = 'Sign In';
       toggleText.textContent = "Don't have an account?";
       toggleModeBtn.textContent = 'Sign Up';
       magicLinkBtn.classList.remove('d-none');
     }
-    resendVerificationBtn.classList.add('d-none');
+    if (resendVerificationBtn) resendVerificationBtn.classList.add('d-none');
     alertContainer.innerHTML = '';
   });
 
@@ -155,32 +155,34 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Handle Resend Verification Email
-  resendVerificationBtn.addEventListener('click', async () => {
-    alertContainer.innerHTML = ''; // clear previous alerts
-    const email = emailInput.value;
-    if (!email) {
-      showAlert('Please enter your email to resend the verification link.');
-      return;
-    }
+  if (resendVerificationBtn) {
+    resendVerificationBtn.addEventListener('click', async () => {
+      alertContainer.innerHTML = ''; // clear previous alerts
+      const email = emailInput.value;
+      if (!email) {
+        showAlert('Please enter your email to resend the verification link.');
+        return;
+      }
 
-    try {
-      resendVerificationBtn.disabled = true;
-      const { error } = await supabaseClient.auth.resend({
-        type: 'signup',
-        email,
-        options: {
-          emailRedirectTo: window.location.href
-        }
-      });
-      if (error) throw error;
-      showAlert('Verification email resent! Please check your inbox.', 'success');
-      resendVerificationBtn.classList.add('d-none');
-    } catch (error) {
-      showAlert(error.message);
-    } finally {
-      resendVerificationBtn.disabled = false;
-    }
-  });
+      try {
+        resendVerificationBtn.disabled = true;
+        const { error } = await supabaseClient.auth.resend({
+          type: 'signup',
+          email,
+          options: {
+            emailRedirectTo: window.location.href
+          }
+        });
+        if (error) throw error;
+        showAlert('Verification email resent! Please check your inbox.', 'success');
+        resendVerificationBtn.classList.add('d-none');
+      } catch (error) {
+        showAlert(error.message);
+      } finally {
+        resendVerificationBtn.disabled = false;
+      }
+    });
+  }
 });
 
 // Global logout function available to other pages
