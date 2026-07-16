@@ -29,3 +29,19 @@ function resetInactivityTimer() {
 
 // Initialize the timer
 resetInactivityTimer();
+
+// Theme Manager
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-bs-theme', savedTheme);
+  document.documentElement.setAttribute('data-theme', savedTheme);
+}
+initTheme();
+
+window.toggleTheme = () => {
+  const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-bs-theme', newTheme);
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+};

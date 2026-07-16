@@ -9,17 +9,38 @@
   --primary-color: #0d6efd;
   --success-color: #28a745;
   --danger-color: #dc3545;
+  --danger-color: #dc3545;
+  
+  --bg-grad-1: rgba(13, 110, 253, 0.12);
+  --bg-grad-2: rgba(40, 167, 69, 0.1);
+  --glass-bg: rgba(26, 26, 26, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --nav-bg: rgba(18, 18, 18, 0.75);
   
   --app-max-width: 600px;
   --bottom-nav-height: 70px;
 }
 
+[data-theme="light"] {
+  --bg-dark: #f0f2f5;
+  --card-dark: #ffffff;
+  --card-border: rgba(0, 0, 0, 0.1);
+  --text-main: #212529;
+  --text-muted: #6c757d;
+  
+  --bg-grad-1: rgba(13, 110, 253, 0.08);
+  --bg-grad-2: rgba(40, 167, 69, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --nav-bg: rgba(255, 255, 255, 0.85);
+}
+
 body {
   font-family: 'Outfit', sans-serif;
-  background-color: #000 !important;
+  background-color: var(--bg-dark) !important;
   background-image: 
-    radial-gradient(circle at 10% 20%, rgba(13, 110, 253, 0.12), transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(40, 167, 69, 0.1), transparent 40%);
+    radial-gradient(circle at 10% 20%, var(--bg-grad-1), transparent 40%),
+    radial-gradient(circle at 90% 80%, var(--bg-grad-2), transparent 40%);
   background-attachment: fixed;
   color: var(--text-main);
 }
@@ -49,12 +70,12 @@ body {
 
 /* Custom Card Style with iOS Glassmorphism */
 .app-card {
-  background-color: rgba(26, 26, 26, 0.6) !important;
+  background-color: var(--glass-bg) !important;
   backdrop-filter: blur(25px) saturate(180%);
   -webkit-backdrop-filter: blur(25px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid var(--glass-border) !important;
   border-radius: 20px !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05) !important;
   animation: springFadeUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1) both;
 }
 
@@ -72,10 +93,10 @@ body {
   left: 0;
   width: 100%;
   height: var(--bottom-nav-height);
-  background-color: rgba(18, 18, 18, 0.75);
+  background-color: var(--nav-bg);
   backdrop-filter: blur(30px) saturate(200%);
   -webkit-backdrop-filter: blur(30px) saturate(200%);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--glass-border);
   z-index: 1030;
 }
 
@@ -137,9 +158,9 @@ body {
 
 /* Input Refinements */
 .form-control, .form-select {
-  background-color: #222 !important;
-  border: 1px solid var(--card-border) !important;
-  color: white !important;
+  background-color: var(--card-dark) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: var(--text-main) !important;
   border-radius: 12px;
 }
 .form-control:focus, .form-select:focus {
@@ -154,11 +175,11 @@ h1, h2, h3, h4, h5, h6 {
 
 /* List Groups (Settings) */
 .list-group-item {
-  background-color: rgba(26, 26, 26, 0.6);
+  background-color: var(--glass-bg);
   backdrop-filter: blur(25px) saturate(180%);
   -webkit-backdrop-filter: blur(25px) saturate(180%);
-  border-color: rgba(255, 255, 255, 0.08);
-  color: white;
+  border-color: var(--glass-border);
+  color: var(--text-main);
 }
 
 /* Modals */
@@ -170,16 +191,17 @@ h1, h2, h3, h4, h5, h6 {
   transform: scale(1) translateY(0);
 }
 .modal-content {
-  background-color: rgba(30, 30, 30, 0.75) !important;
+  background-color: var(--glass-bg) !important;
   backdrop-filter: blur(35px) saturate(200%);
   -webkit-backdrop-filter: blur(35px) saturate(200%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--glass-border);
   border-radius: 24px;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+  color: var(--text-main);
 }
 .modal-header {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--glass-border);
 }
 .modal-footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--glass-border);
 }
