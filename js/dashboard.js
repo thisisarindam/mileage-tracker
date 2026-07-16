@@ -6,13 +6,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   let userSettings = { currency: 'INR', unit_system: 'metric' };
 
   // Elements
-  const entriesTableBody = document.getElementById('entries-table-body');
+  const recentLogsContainer = document.getElementById('recent-logs-container');
   const addEntryForm = document.getElementById('add-entry-form');
   const addEntryModalEl = document.getElementById('addEntryModal');
   const addEntryModal = new bootstrap.Modal(addEntryModalEl);
   const saveEntryBtn = document.getElementById('save-entry-btn');
   const modalAlertContainer = document.getElementById('modal-alert-container');
-  let dashboardCostChart = null;
+  let priceChart = null;
+  let runningCostChart = null;
+  let efficiencyChart = null;
 
   // Input Elements
   const entryDateInput = document.getElementById('entry_date');
@@ -68,92 +70,226 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (error) {
       console.error('Error fetching entries:', error);
-      entriesTableBody.innerHTML = `<tr><td colspan="6" class="text-danger text-center">Failed to load entries.</td></tr>`;
+      recentLogsContainer.innerHTML = `<div class="text-danger text-center py-4">Failed to load logs.</div>`;
       return;
     }
 
-    renderEntriesTable(data);
+    renderRecentLogs(data);
     updateQuickStats(data);
-    renderDashboardChart(data);
+    renderAnalyticsCarousel(data);
   };
 
-  const renderDashboardChart = (entries) => {
-    if (dashboardCostChart) {
-      dashboardCostChart.destroy();
+  const createLineChart = (canvasId, label, labels, data, chartInstance) => {
+    if (chartInstance) chartInstance.destroy();
+    
+    Chart.defaults.color = '#6c757d'; 
+    Chart.defaults.font.family = 'system-ui, -apple-system, sans-serif';
+
+    // Calculate Average for the dashed line
+    const avg = data.reduce((a, b) => a + b, 0) / data.length || 0;
+    const avgData = new Array(data.length).fill(avg);
+
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    return new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: label,
+            data: data,
+            borderColor: '#e9ecef', // light line
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            pointBackgroundColor: '#1a1a1a', // hollow dots effect
+            pointBorderColor: '#e9ecef',
+            pointBorderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            tension: 0.3
+          },
+          {
+            label: 'Average',
+            data: avgData,
+            borderColor: '#6c757d', // dashed average line
+            borderWidth: 1.5,
+            borderDash: [5, 5],
+            pointRadius: 0,
+            fill: false
+          }
+        ]
+      },
+      options: { 
+        responsive: true, 
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            padding: 10,
+            displayColors: false,
+            callbacks: {
+              label: (context) => `${context.parsed.y.toFixed(1)}`
+            }
+          }
+        },
+        scales: {
+          x: { display: false }, // Hide x axis completely like in screenshots
+          y: { 
+            border: { display: false },
+            grid: { color: 'rgba(255,255,255,0.05)' },
+            ticks: { maxTicksLimit: 5 }
+          }
+        }
+      }
+    });
+  };
+
+  const renderAnalyticsCarousel = (entries) => {
+    if (!entries || entries.length < 2) return;
+
+    const sorted = [...entries].sort((a, b) => new Date(a.entry_date) - new Date(b.entry_date));
+    const sym = userSettings.currency === 'INR' ? '₹' : (userSettings.currency === 'USD' ? '$' : userSettings.currency);
+    const distUnit = userSettings.unit_system === 'imperial' ? 'mi' : 'km';
+    const volUnit = userSettings.unit_system === 'imperial' ? 'gal' : 'L';
+
+    // --- Price Trend ---
+    const priceLabels = sorted.map(e => e.entry_date);
+    const priceData = sorted.map(e => parseFloat(e.price_per_litre));
+    
+    priceChart = createLineChart('priceTrendChart', 'Price', priceLabels, priceData, priceChart);
+    
+    const minPrice = Math.min(...priceData);
+    const maxPrice = Math.max(...priceData);
+    const avgPrice = priceData.reduce((a, b) => a + b, 0) / priceData.length;
+    
+    document.getElementById('price-lowest').innerText = `${sym}${minPrice.toFixed(1)}`;
+    document.getElementById('price-highest').innerText = `${sym}${maxPrice.toFixed(1)}`;
+    document.getElementById('price-average').innerText = `${sym}${avgPrice.toFixed(1)}`;
+    document.getElementById('price-avg-badge').innerText = `Avg: ${sym}${avgPrice.toFixed(1)}`;
+
+    // --- Running Cost & Efficiency ---
+    const runCostLabels = [];
+    const runCostData = [];
+    const effLabels = [];
+    const effData = [];
+
+    for (let i = 1; i < sorted.length; i++) {
+      const prev = sorted[i-1];
+      const curr = sorted[i];
+      const dist = parseFloat(curr.odometer_km) - parseFloat(prev.odometer_km);
+      const litres = parseFloat(curr.litres);
+      const cost = parseFloat(curr.total_cost);
+
+      if (dist > 0 && litres > 0) {
+        // Running Cost: Total cost / distance
+        const runCost = cost / dist;
+        runCostLabels.push(curr.entry_date);
+        runCostData.push(runCost);
+
+        // Efficiency: Distance / Litres (or miles per gallon)
+        let eff = dist / litres;
+        if (userSettings.unit_system === 'imperial') {
+           eff = dist / (litres * 0.264172); // rough gal
+        }
+        effLabels.push(curr.entry_date);
+        effData.push(eff);
+      }
     }
 
-    if (!entries || entries.length === 0) return;
+    if (runCostData.length > 0) {
+      runningCostChart = createLineChart('runningCostChart', 'Running Cost', runCostLabels, runCostData, runningCostChart);
+      
+      const minRC = Math.min(...runCostData);
+      const maxRC = Math.max(...runCostData);
+      const avgRC = runCostData.reduce((a, b) => a + b, 0) / runCostData.length;
+      
+      document.getElementById('running-cost-lowest').innerText = `${sym}${minRC.toFixed(1)}/${distUnit}`;
+      document.getElementById('running-cost-highest').innerText = `${sym}${maxRC.toFixed(1)}/${distUnit}`;
+      document.getElementById('running-cost-average').innerText = `${sym}${avgRC.toFixed(1)}/${distUnit}`;
+      document.getElementById('running-cost-avg-badge').innerText = `Avg: ${sym}${avgRC.toFixed(1)}/${distUnit}`;
+    }
 
-    // Sort entries oldest to newest
-    const sortedEntries = [...entries].sort((a, b) => new Date(a.entry_date) - new Date(b.entry_date));
+    if (effData.length > 0) {
+      efficiencyChart = createLineChart('efficiencyChart', 'Efficiency', effLabels, effData, efficiencyChart);
+      // Change eff chart line color to green to match screenshot
+      efficiencyChart.data.datasets[0].borderColor = '#28a745';
+      efficiencyChart.data.datasets[0].pointBorderColor = '#28a745';
+      efficiencyChart.update();
 
-    // Cost Per Month
-    const costByMonth = {};
-    sortedEntries.forEach(entry => {
-      const date = new Date(entry.entry_date);
-      const monthYear = `${date.toLocaleString('default', { month: 'short' })} ${date.getFullYear()}`;
-      if (!costByMonth[monthYear]) costByMonth[monthYear] = 0;
-      costByMonth[monthYear] += parseFloat(entry.total_cost);
-    });
-
-    const costLabels = Object.keys(costByMonth);
-    const costData = Object.values(costByMonth);
-    const sym = userSettings.currency === 'INR' ? '₹' : (userSettings.currency === 'USD' ? '$' : userSettings.currency);
-    
-    Chart.defaults.color = '#adb5bd'; // bootstrap dark theme text muted
-    const costCtx = document.getElementById('dashboardCostChart').getContext('2d');
-    
-    dashboardCostChart = new Chart(costCtx, {
-      type: 'bar',
-      data: {
-        labels: costLabels,
-        datasets: [{
-          label: `Total Cost (${sym})`,
-          data: costData,
-          backgroundColor: '#198754',
-          borderWidth: 1
-        }]
-      },
-      options: { responsive: true, maintainAspectRatio: false }
-    });
+      const minEff = Math.min(...effData);
+      const maxEff = Math.max(...effData);
+      const avgEff = effData.reduce((a, b) => a + b, 0) / effData.length;
+      const effSuffix = userSettings.unit_system === 'imperial' ? 'mpg' : 'km/L';
+      
+      document.getElementById('efficiency-lowest').innerText = `${minEff.toFixed(1)} ${effSuffix}`;
+      document.getElementById('efficiency-highest').innerText = `${maxEff.toFixed(1)} ${effSuffix}`;
+      document.getElementById('efficiency-average').innerText = `${avgEff.toFixed(1)} ${effSuffix}`;
+      document.getElementById('efficiency-avg-badge').innerText = `Avg: ${avgEff.toFixed(1)} ${effSuffix}`;
+    }
   };
 
-  const formatCurrency = (val) => {
-    // Basic formatting based on settings
-    const sym = userSettings.currency === 'INR' ? '₹' : (userSettings.currency === 'USD' ? '$' : userSettings.currency);
-    return `${sym}${parseFloat(val).toFixed(2)}`;
-  };
-
-  const renderEntriesTable = (entries) => {
+  const renderRecentLogs = (entries) => {
     if (!entries || entries.length === 0) {
-      entriesTableBody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">No fuel entries found. Add one above!</td></tr>`;
+      recentLogsContainer.innerHTML = `<div class="text-center py-4 text-muted">No fuel entries found. Add one above!</div>`;
       return;
     }
 
     let html = '';
-    const displayLimit = 10; // Only show 10 on dashboard
+    const displayLimit = 10;
+    const sym = userSettings.currency === 'INR' ? '₹' : (userSettings.currency === 'USD' ? '$' : userSettings.currency);
+    const effSuffix = userSettings.unit_system === 'imperial' ? 'mpg' : 'km/L';
     
-    entries.slice(0, displayLimit).forEach(entry => {
+    const sorted = [...entries].sort((a, b) => parseFloat(b.odometer_km) - parseFloat(a.odometer_km));
+    const recent = sorted.slice(0, displayLimit);
+
+    recent.forEach((entry, index) => {
       const dateObj = new Date(entry.entry_date);
-      const dateStr = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-      const station = entry.station_name || '-';
-      
-      const distUnit = userSettings.unit_system === 'imperial' ? 'mi' : 'km';
-      const volUnit = userSettings.unit_system === 'imperial' ? 'gal' : 'L';
-      
+      const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const station = entry.station_name || 'Unknown';
+      const initial = station.charAt(0).toUpperCase();
+
+      // Calculate efficiency for this specific run if there is a previous entry chronologically
+      let effBadgeHtml = '';
+      if (index + 1 < sorted.length) {
+        const prev = sorted[index + 1];
+        const dist = parseFloat(entry.odometer_km) - parseFloat(prev.odometer_km);
+        const litres = parseFloat(entry.litres);
+        if (dist > 0 && litres > 0) {
+          let eff = dist / litres;
+          if (userSettings.unit_system === 'imperial') eff = dist / (litres * 0.264172);
+          
+          effBadgeHtml = `
+            <div class="bg-success text-white rounded p-2 text-center" style="min-width: 60px;">
+              <div class="fw-bold lh-1">${eff.toFixed(1)}</div>
+              <div style="font-size: 0.65rem;" class="opacity-75 mt-1">${effSuffix}</div>
+            </div>
+          `;
+        }
+      }
+
       html += `
-        <tr>
-          <td>${dateStr}</td>
-          <td>${parseFloat(entry.odometer_km).toLocaleString()} ${distUnit}</td>
-          <td>${parseFloat(entry.litres).toFixed(2)} ${volUnit}</td>
-          <td>${formatCurrency(entry.price_per_litre)}</td>
-          <td>${formatCurrency(entry.total_cost)}</td>
-          <td>${station}</td>
-        </tr>
+        <div class="card shadow-sm border-secondary border-opacity-25 mb-3" style="background-color: #1a1a1a;">
+          <div class="card-body p-3 d-flex align-items-center">
+            <div class="bg-secondary bg-opacity-25 text-white rounded d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-size: 1.2rem; font-weight: 500;">
+              ${initial}
+            </div>
+            <div class="flex-grow-1">
+              <div class="d-flex align-items-baseline mb-1">
+                <span class="fw-bold text-white fs-5 me-2">${sym}${Math.round(entry.total_cost)}</span>
+                <span class="text-light small">${station}</span>
+              </div>
+              <div class="text-muted small">
+                <i class="bi bi-calendar3 me-1"></i> ${dateStr}
+              </div>
+            </div>
+            ${effBadgeHtml}
+          </div>
+        </div>
       `;
     });
     
-    entriesTableBody.innerHTML = html;
+    recentLogsContainer.innerHTML = html;
   };
 
   const updateQuickStats = (entries) => {

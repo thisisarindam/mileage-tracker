@@ -72,47 +72,123 @@
       </div>
     </div>
 
-    <!-- Bottom Section: Table and Chart -->
-    <div class="row mb-5">
-      <!-- Recent Entries Table -->
-      <div class="col-lg-8 mb-4 mb-lg-0">
-        <div class="card shadow-sm h-100">
-          <div class="card-header bg-body-tertiary d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Recent Entries</h5>
-            <a href="history.html" class="btn btn-sm btn-outline-secondary">View All</a>
+    <!-- Analytics Carousel Section -->
+    <div class="mb-5">
+      <h4 class="mb-1">Analytics</h4>
+      <p class="text-muted small mb-3">Swipe to see detailed trends</p>
+      
+      <div id="analyticsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+        <!-- Indicators -->
+        <div class="carousel-indicators" style="bottom: -40px;">
+          <button type="button" data-bs-target="#analyticsCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+          <button type="button" data-bs-target="#analyticsCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+          <button type="button" data-bs-target="#analyticsCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+
+        <div class="carousel-inner">
+          <!-- Slide 1: Fuel Price Trend -->
+          <div class="carousel-item active">
+            <div class="card shadow-sm border-secondary border-opacity-25" style="background-color: #1a1a1a;">
+              <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="mb-0 text-white">Fuel Price Trend</h5>
+                  <span class="badge bg-secondary bg-opacity-25 text-light px-3 py-2 rounded-pill" id="price-avg-badge">Avg: --</span>
+                </div>
+                <div style="height: 200px;">
+                  <canvas id="priceTrendChart"></canvas>
+                </div>
+                <hr class="border-secondary opacity-25 mt-4 mb-3">
+                <div class="row text-center">
+                  <div class="col-4 border-end border-secondary border-opacity-25">
+                    <div class="text-success small mb-1"><i class="bi bi-arrow-down"></i> Lowest</div>
+                    <div class="fw-bold text-white fs-5" id="price-lowest">--</div>
+                  </div>
+                  <div class="col-4 border-end border-secondary border-opacity-25">
+                    <div class="text-danger small mb-1"><i class="bi bi-arrow-up"></i> Highest</div>
+                    <div class="fw-bold text-white fs-5" id="price-highest">--</div>
+                  </div>
+                  <div class="col-4">
+                    <div class="text-light small mb-1"><i class="bi bi-dash-lg"></i> Average</div>
+                    <div class="fw-bold text-white fs-5" id="price-average">--</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="card-body p-0">
-            <div class="table-responsive">
-              <table class="table table-hover mb-0">
-                <thead class="table-light">
-                  <tr>
-                    <th>Date</th>
-                    <th>Odometer</th>
-                    <th>Litres</th>
-                    <th>Price/Unit</th>
-                    <th>Total Cost</th>
-                    <th>Station</th>
-                  </tr>
-                </thead>
-                <tbody id="entries-table-body">
-                  <tr><td colspan="6" class="text-center py-4 text-muted">Loading entries...</td></tr>
-                </tbody>
-              </table>
+
+          <!-- Slide 2: Running Cost -->
+          <div class="carousel-item">
+            <div class="card shadow-sm border-secondary border-opacity-25" style="background-color: #1a1a1a;">
+              <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="mb-0 text-white">Running Cost</h5>
+                  <span class="badge bg-secondary bg-opacity-25 text-light px-3 py-2 rounded-pill" id="running-cost-avg-badge">Avg: --</span>
+                </div>
+                <div style="height: 200px;">
+                  <canvas id="runningCostChart"></canvas>
+                </div>
+                <hr class="border-secondary opacity-25 mt-4 mb-3">
+                <div class="row text-center">
+                  <div class="col-4 border-end border-secondary border-opacity-25">
+                    <div class="text-success small mb-1"><i class="bi bi-arrow-down"></i> Lowest</div>
+                    <div class="fw-bold text-white fs-5" id="running-cost-lowest">--</div>
+                  </div>
+                  <div class="col-4 border-end border-secondary border-opacity-25">
+                    <div class="text-danger small mb-1"><i class="bi bi-arrow-up"></i> Highest</div>
+                    <div class="fw-bold text-white fs-5" id="running-cost-highest">--</div>
+                  </div>
+                  <div class="col-4">
+                    <div class="text-light small mb-1"><i class="bi bi-dash-lg"></i> Average</div>
+                    <div class="fw-bold text-white fs-5" id="running-cost-average">--</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 3: Efficiency Trend -->
+          <div class="carousel-item">
+            <div class="card shadow-sm border-secondary border-opacity-25" style="background-color: #1a1a1a;">
+              <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="mb-0 text-white">Efficiency Trend</h5>
+                  <span class="badge bg-secondary bg-opacity-25 text-success px-3 py-2 rounded-pill" id="efficiency-avg-badge">Avg: --</span>
+                </div>
+                <div style="height: 200px;">
+                  <canvas id="efficiencyChart"></canvas>
+                </div>
+                <hr class="border-secondary opacity-25 mt-4 mb-3">
+                <div class="row text-center">
+                  <div class="col-4 border-end border-secondary border-opacity-25">
+                    <div class="text-danger small mb-1"><i class="bi bi-arrow-down"></i> Lowest</div>
+                    <div class="fw-bold text-white fs-5" id="efficiency-lowest">--</div>
+                  </div>
+                  <div class="col-4 border-end border-secondary border-opacity-25">
+                    <div class="text-success small mb-1"><i class="bi bi-arrow-up"></i> Highest</div>
+                    <div class="fw-bold text-white fs-5" id="efficiency-highest">--</div>
+                  </div>
+                  <div class="col-4">
+                    <div class="text-light small mb-1"><i class="bi bi-dash-lg"></i> Average</div>
+                    <div class="fw-bold text-white fs-5" id="efficiency-average">--</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Recent Logs Section -->
+    <div class="mb-5 mt-5">
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <h4 class="mb-0">Recent Logs</h4>
+        <a href="history.html" class="text-decoration-none text-light small"><i class="bi bi-arrow-right"></i> View All</a>
+      </div>
+      <p class="text-muted small mb-3">Last 10 entries</p>
       
-      <!-- Monthly Spending Chart -->
-      <div class="col-lg-4">
-        <div class="card shadow-sm h-100">
-          <div class="card-header bg-body-tertiary">
-            <h5 class="mb-0">Monthly Spending</h5>
-          </div>
-          <div class="card-body">
-            <canvas id="dashboardCostChart"></canvas>
-          </div>
-        </div>
+      <div id="recent-logs-container">
+        <div class="text-center py-4 text-muted">Loading logs...</div>
       </div>
     </div>
   </div>
