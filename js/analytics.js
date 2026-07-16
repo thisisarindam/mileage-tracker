@@ -73,7 +73,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const costData = Object.values(costByMonth);
 
     // Chart Options
-    Chart.defaults.color = '#adb5bd'; // bootstrap dark theme text muted
+    Chart.defaults.color = '#6c757d'; 
+    Chart.defaults.font.family = 'Outfit, sans-serif';
 
     // Render Efficiency Chart
     const effCtx = document.getElementById('efficiencyChart').getContext('2d');
@@ -84,14 +85,33 @@ document.addEventListener('DOMContentLoaded', async () => {
         datasets: [{
           label: userSettings.unit_system === 'imperial' ? 'MPG' : 'km/l',
           data: efficiencyData,
-          borderColor: '#0d6efd',
-          backgroundColor: 'rgba(13, 110, 253, 0.2)',
+          borderColor: '#28a745',
+          backgroundColor: 'transparent',
           borderWidth: 2,
-          fill: true,
+          pointBackgroundColor: '#1a1a1a',
+          pointBorderColor: '#28a745',
+          pointBorderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6,
           tension: 0.3
         }]
       },
-      options: { responsive: true }
+      options: { 
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: { 
+            grid: { display: false } 
+          },
+          y: { 
+            border: { display: false },
+            grid: { color: 'rgba(255,255,255,0.05)' },
+            ticks: { maxTicksLimit: 6 }
+          }
+        }
+      }
     });
 
     // Render Cost Chart
@@ -104,11 +124,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         datasets: [{
           label: `Total Cost (${sym})`,
           data: costData,
-          backgroundColor: '#198754',
-          borderWidth: 1
+          backgroundColor: '#0d6efd',
+          borderRadius: 4,
+          borderWidth: 0
         }]
       },
-      options: { responsive: true }
+      options: { 
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: { 
+            grid: { display: false } 
+          },
+          y: { 
+            border: { display: false },
+            grid: { color: 'rgba(255,255,255,0.05)' },
+            ticks: { maxTicksLimit: 6 }
+          }
+        }
+      }
     });
   };
 

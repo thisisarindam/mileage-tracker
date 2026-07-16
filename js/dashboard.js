@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       html += `
-        <div class="card shadow-sm border-secondary border-opacity-25 mb-3" style="background-color: #1a1a1a;">
+        <div class="card app-card mb-3 border-0">
           <div class="card-body p-3 d-flex align-items-center">
             <div class="bg-secondary bg-opacity-25 text-white rounded d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-size: 1.2rem; font-weight: 500;">
               ${initial}

@@ -1,0 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg-dark: #121212;
+  --card-dark: #1a1a1a;
+  --card-border: rgba(255, 255, 255, 0.05);
+  --text-main: #f8f9fa;
+  --text-muted: #6c757d;
+  --primary-color: #0d6efd;
+  --success-color: #28a745;
+  --danger-color: #dc3545;
+  
+  --app-max-width: 600px;
+  --bottom-nav-height: 70px;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--bg-dark) !important;
+  color: var(--text-main);
+}
+
+.has-bottom-nav {
+  padding-bottom: calc(var(--bottom-nav-height) + 20px);
+}
+
+/* Constrain the main container to feel like an app on desktop */
+.app-container {
+  max-width: var(--app-max-width);
+  margin: 0 auto;
+  padding: 15px;
+}
+
+/* Custom Card Style */
+.app-card {
+  background-color: var(--card-dark) !important;
+  border: 1px solid var(--card-border) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: var(--bottom-nav-height);
+  background-color: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid var(--card-border);
+  z-index: 1030;
+}
+
+.bottom-nav-container {
+  width: 100%;
+  max-width: var(--app-max-width);
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  width: 25%;
+  height: 100%;
+  transition: all 0.2s ease;
+}
+
+.nav-item i {
+  font-size: 1.4rem;
+  margin-bottom: 2px;
+}
+
+.nav-item.active {
+  color: var(--text-main);
+}
+.nav-item.active i {
+  color: var(--primary-color);
+}
+
+.nav-item:active {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Button Refinements */
+.btn {
+  border-radius: 12px;
+  font-weight: 500;
+  padding: 10px 20px;
+}
+
+.btn-primary, .btn-outline-primary {
+  border-radius: 100px; /* Pill */
+}
+
+/* Input Refinements */
+.form-control, .form-select {
+  background-color: #222 !important;
+  border: 1px solid var(--card-border) !important;
+  color: white !important;
+  border-radius: 12px;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+}
+
+/* Typography refinements */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+}
+
+/* List Groups (Settings) */
+.list-group-item {
+  background-color: var(--card-dark);
+  border-color: var(--card-border);
+  color: white;
+}

@@ -7,66 +7,41 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
-<body>
+<body class="has-bottom-nav">
   
-  <nav class="navbar navbar-expand-lg bg-body-tertiary mb-4">
-    <div class="container">
-      <a class="navbar-brand" href="dashboard.html">Mileage Tracker</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item">
-            <a class="nav-link active" href="dashboard.html">Dashboard</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="history.html">History</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="analytics.html">Analytics</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="settings.html">Settings</a>
-          </li>
-        </ul>
-        <button class="btn btn-outline-danger" onclick="window.logoutUser()">Log Out</button>
-      </div>
-    </div>
-  </nav>
-
-  <div class="container mt-4">
+  <div class="app-container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2>Dashboard</h2>
-      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEntryModal">
-        + Add Fuel Entry
+      <h2 class="fw-bold mb-0">Dashboard</h2>
+      <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addEntryModal">
+        <i class="bi bi-plus-lg me-1"></i> Add Entry
       </button>
     </div>
 
     <!-- Quick Stats -->
     <div class="row mb-4">
       <div class="col-md-4 mb-3 mb-md-0">
-        <div class="card shadow-sm h-100">
+        <div class="card app-card h-100">
           <div class="card-body">
-            <h5 class="card-title text-muted">Monthly Fuel Spent</h5>
-            <h3 class="card-text" id="stat-monthly-spent">--</h3>
+            <h5 class="card-title text-muted fs-6 mb-1">Monthly Fuel Spent</h5>
+            <h3 class="card-text fw-bold" id="stat-monthly-spent">--</h3>
           </div>
         </div>
       </div>
       <div class="col-md-4 mb-3 mb-md-0">
-        <div class="card shadow-sm h-100">
+        <div class="card app-card h-100">
           <div class="card-body">
-            <h5 class="card-title text-muted">Avg Monthly Distance</h5>
-            <h3 class="card-text" id="stat-monthly-distance">--</h3>
+            <h5 class="card-title text-muted fs-6 mb-1">Avg Monthly Dist</h5>
+            <h3 class="card-text fw-bold" id="stat-monthly-distance">--</h3>
           </div>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="card shadow-sm h-100">
+        <div class="card app-card h-100">
           <div class="card-body">
-            <h5 class="card-title text-muted">Avg Efficiency</h5>
-            <h3 class="card-text" id="stat-avg-efficiency">--</h3>
+            <h5 class="card-title text-muted fs-6 mb-1">Avg Efficiency</h5>
+            <h3 class="card-text fw-bold" id="stat-avg-efficiency">--</h3>
           </div>
         </div>
       </div>
@@ -88,7 +63,7 @@
         <div class="carousel-inner">
           <!-- Slide 1: Fuel Price Trend -->
           <div class="carousel-item active">
-            <div class="card shadow-sm border-secondary border-opacity-25" style="background-color: #1a1a1a;">
+            <div class="card app-card">
               <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                   <h5 class="mb-0 text-white">Fuel Price Trend</h5>
@@ -118,7 +93,7 @@
 
           <!-- Slide 2: Running Cost -->
           <div class="carousel-item">
-            <div class="card shadow-sm border-secondary border-opacity-25" style="background-color: #1a1a1a;">
+            <div class="card app-card">
               <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                   <h5 class="mb-0 text-white">Running Cost</h5>
@@ -148,7 +123,7 @@
 
           <!-- Slide 3: Efficiency Trend -->
           <div class="carousel-item">
-            <div class="card shadow-sm border-secondary border-opacity-25" style="background-color: #1a1a1a;">
+            <div class="card app-card">
               <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                   <h5 class="mb-0 text-white">Efficiency Trend</h5>
@@ -192,6 +167,28 @@
       </div>
     </div>
   </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <div class="bottom-nav-container">
+      <a href="dashboard.html" class="nav-item active">
+        <i class="bi bi-house-fill"></i>
+        <span>Home</span>
+      </a>
+      <a href="history.html" class="nav-item">
+        <i class="bi bi-clock-history"></i>
+        <span>History</span>
+      </a>
+      <a href="analytics.html" class="nav-item">
+        <i class="bi bi-graph-up"></i>
+        <span>Analytics</span>
+      </a>
+      <a href="settings.html" class="nav-item">
+        <i class="bi bi-gear"></i>
+        <span>Settings</span>
+      </a>
+    </div>
+  </nav>
 
   <!-- Add Entry Modal -->
   <div class="modal fade" id="addEntryModal" tabindex="-1" aria-labelledby="addEntryModalLabel" aria-hidden="true">

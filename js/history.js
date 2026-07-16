@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   let userSettings = { currency: 'INR', unit_system: 'metric' };
   let allEntries = []; // Cache for editing
 
-  const historyTableBody = document.getElementById('history-table-body');
+  const historyLogsContainer = document.getElementById('history-logs-container');
   const alertContainer = document.getElementById('alert-container');
   const modalAlertContainer = document.getElementById('modal-alert-container');
 
@@ -162,50 +162,88 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (error) {
       console.error('Error fetching entries:', error);
-      historyTableBody.innerHTML = `<tr><td colspan="8" class="text-danger text-center">Failed to load entries.</td></tr>`;
+      historyLogsContainer.innerHTML = `<div class="text-danger text-center py-4">Failed to load entries.</div>`;
       return;
     }
 
     if (!data || data.length === 0) {
-      historyTableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">No fuel entries found. Add one on the Dashboard!</td></tr>`;
+      historyLogsContainer.innerHTML = `<div class="text-center py-4 text-muted">No fuel entries found. Add one on the Dashboard!</div>`;
       allEntries = [];
       return;
     }
 
     allEntries = data;
 
+    const sorted = [...data].sort((a, b) => parseFloat(b.odometer_km) - parseFloat(a.odometer_km));
+    
     let html = '';
-    data.forEach(entry => {
+    sorted.forEach((entry, index) => {
       const dateObj = new Date(entry.entry_date);
       const dateStr = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-      const station = entry.station_name || '-';
-      const notes = entry.notes || '-';
+      const station = entry.station_name || 'Unknown';
+      const initial = station.charAt(0).toUpperCase();
+      const notes = entry.notes ? `<div class="text-muted small mt-1"><i class="bi bi-card-text"></i> ${entry.notes}</div>` : '';
       
       const distUnit = userSettings.unit_system === 'imperial' ? 'mi' : 'km';
       const volUnit = userSettings.unit_system === 'imperial' ? 'gal' : 'L';
+      const effSuffix = userSettings.unit_system === 'imperial' ? 'mpg' : 'km/L';
+      
+      let effBadgeHtml = '';
+      if (index + 1 < sorted.length) {
+        const prev = sorted[index + 1];
+        const dist = parseFloat(entry.odometer_km) - parseFloat(prev.odometer_km);
+        const litres = parseFloat(entry.litres);
+        if (dist > 0 && litres > 0) {
+          let eff = dist / litres;
+          if (userSettings.unit_system === 'imperial') eff = dist / (litres * 0.264172);
+          
+          effBadgeHtml = `
+            <div class="bg-success text-white rounded p-2 text-center ms-3" style="min-width: 60px;">
+              <div class="fw-bold lh-1">${eff.toFixed(1)}</div>
+              <div style="font-size: 0.65rem;" class="opacity-75 mt-1">${effSuffix}</div>
+            </div>
+          `;
+        }
+      }
       
       html += `
-        <tr>
-          <td>${dateStr}</td>
-          <td>${parseFloat(entry.odometer_km).toLocaleString()} ${distUnit}</td>
-          <td>${parseFloat(entry.litres).toFixed(2)} ${volUnit}</td>
-          <td>${formatCurrency(entry.price_per_litre)}</td>
-          <td>${formatCurrency(entry.total_cost)}</td>
-          <td>${station}</td>
-          <td class="text-truncate" style="max-width: 150px;" title="${notes}">${notes}</td>
-          <td class="text-end">
-            <button class="btn btn-sm btn-outline-primary me-1" onclick="editEntry('${entry.id}')" title="Edit">
-              <i class="bi bi-pencil"></i>
-            </button>
-            <button class="btn btn-sm btn-outline-danger" onclick="deleteEntry('${entry.id}')" title="Delete">
-              <i class="bi bi-trash"></i>
-            </button>
-          </td>
-        </tr>
+        <div class="card app-card mb-3 border-0">
+          <div class="card-body p-3">
+            <div class="d-flex align-items-center mb-2">
+              <div class="bg-secondary bg-opacity-25 text-white rounded d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-size: 1.2rem; font-weight: 500;">
+                ${initial}
+              </div>
+              <div class="flex-grow-1">
+                <div class="d-flex align-items-baseline mb-1">
+                  <span class="fw-bold text-white fs-5 me-2">${formatCurrency(entry.total_cost)}</span>
+                  <span class="text-light small">${station}</span>
+                </div>
+                <div class="text-muted small">
+                  <i class="bi bi-calendar3 me-1"></i> ${dateStr} &bull; ${parseFloat(entry.odometer_km).toLocaleString()}${distUnit}
+                </div>
+              </div>
+              ${effBadgeHtml}
+            </div>
+            ${notes}
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-secondary border-opacity-25">
+              <div class="small text-muted">
+                ${parseFloat(entry.litres).toFixed(2)}${volUnit} @ ${formatCurrency(entry.price_per_litre)}/${volUnit}
+              </div>
+              <div>
+                <button class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 me-1" onclick="editEntry('${entry.id}')" title="Edit">
+                  <i class="bi bi-pencil" style="font-size: 0.8rem;"></i> Edit
+                </button>
+                <button class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1" onclick="deleteEntry('${entry.id}')" title="Delete">
+                  <i class="bi bi-trash" style="font-size: 0.8rem;"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       `;
     });
     
-    historyTableBody.innerHTML = html;
+    historyLogsContainer.innerHTML = html;
   };
 
   await fetchSettings();
