@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const addEntryModal = new bootstrap.Modal(addEntryModalEl);
   const saveEntryBtn = document.getElementById('save-entry-btn');
   const modalAlertContainer = document.getElementById('modal-alert-container');
+  let dashboardCostChart = null;
 
   // Input Elements
   const entryDateInput = document.getElementById('entry_date');
@@ -73,6 +74,48 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     renderEntriesTable(data);
     updateQuickStats(data);
+    renderDashboardChart(data);
+  };
+
+  const renderDashboardChart = (entries) => {
+    if (dashboardCostChart) {
+      dashboardCostChart.destroy();
+    }
+
+    if (!entries || entries.length === 0) return;
+
+    // Sort entries oldest to newest
+    const sortedEntries = [...entries].sort((a, b) => new Date(a.entry_date) - new Date(b.entry_date));
+
+    // Cost Per Month
+    const costByMonth = {};
+    sortedEntries.forEach(entry => {
+      const date = new Date(entry.entry_date);
+      const monthYear = `${date.toLocaleString('default', { month: 'short' })} ${date.getFullYear()}`;
+      if (!costByMonth[monthYear]) costByMonth[monthYear] = 0;
+      costByMonth[monthYear] += parseFloat(entry.total_cost);
+    });
+
+    const costLabels = Object.keys(costByMonth);
+    const costData = Object.values(costByMonth);
+    const sym = userSettings.currency === 'INR' ? '₹' : (userSettings.currency === 'USD' ? '$' : userSettings.currency);
+    
+    Chart.defaults.color = '#adb5bd'; // bootstrap dark theme text muted
+    const costCtx = document.getElementById('dashboardCostChart').getContext('2d');
+    
+    dashboardCostChart = new Chart(costCtx, {
+      type: 'bar',
+      data: {
+        labels: costLabels,
+        datasets: [{
+          label: `Total Cost (${sym})`,
+          data: costData,
+          backgroundColor: '#198754',
+          borderWidth: 1
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
   };
 
   const formatCurrency = (val) => {
