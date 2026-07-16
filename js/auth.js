@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const passwordContainer = document.getElementById('password-container');
   const submitBtn = document.getElementById('submit-btn');
   const magicLinkBtn = document.getElementById('magic-link-btn');
+  const resendVerificationBtn = document.getElementById('resend-verification-btn');
   const toggleModeBtn = document.getElementById('toggle-mode');
   const toggleText = document.getElementById('toggle-text');
   const alertContainer = document.getElementById('alert-container');
@@ -46,6 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       toggleModeBtn.textContent = 'Sign Up';
       magicLinkBtn.classList.remove('d-none');
     }
+    resendVerificationBtn.classList.add('d-none');
     alertContainer.innerHTML = '';
   });
 
@@ -64,7 +66,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       submitBtn.disabled = true;
       if (isSignUpMode) {
-        const { data, error } = await supabaseClient.auth.signUp({ email, password });
+        const { data, error } = await supabaseClient.auth.signUp({ 
+          email, 
+          password,
+          options: {
+            emailRedirectTo: window.location.href
+          }
+        });
         if (error) throw error;
         if (data.session) {
           window.location.href = 'dashboard.html';
@@ -73,7 +81,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       } else {
         const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        if (error) {
+          if (error.message.includes('Email not confirmed')) {
+            resendVerificationBtn.classList.remove('d-none');
+          }
+          throw error;
+        }
         if (data.session) {
           window.location.href = 'dashboard.html';
         }
@@ -96,13 +109,46 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
       magicLinkBtn.disabled = true;
-      const { error } = await supabaseClient.auth.signInWithOtp({ email });
+      const { error } = await supabaseClient.auth.signInWithOtp({ 
+        email,
+        options: {
+          emailRedirectTo: window.location.href
+        }
+      });
       if (error) throw error;
       showAlert('Magic link sent! Check your email.', 'success');
     } catch (error) {
       showAlert(error.message);
     } finally {
       magicLinkBtn.disabled = false;
+    }
+  });
+
+  // Handle Resend Verification Email
+  resendVerificationBtn.addEventListener('click', async () => {
+    alertContainer.innerHTML = ''; // clear previous alerts
+    const email = emailInput.value;
+    if (!email) {
+      showAlert('Please enter your email to resend the verification link.');
+      return;
+    }
+
+    try {
+      resendVerificationBtn.disabled = true;
+      const { error } = await supabaseClient.auth.resend({
+        type: 'signup',
+        email,
+        options: {
+          emailRedirectTo: window.location.href
+        }
+      });
+      if (error) throw error;
+      showAlert('Verification email resent! Please check your inbox.', 'success');
+      resendVerificationBtn.classList.add('d-none');
+    } catch (error) {
+      showAlert(error.message);
+    } finally {
+      resendVerificationBtn.disabled = false;
     }
   });
 });
