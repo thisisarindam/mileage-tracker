@@ -292,6 +292,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     recentLogsContainer.innerHTML = html;
   };
 
+  const formatCurrency = (val) => {
+    // Basic formatting based on settings
+    const sym = userSettings.currency === 'INR' ? '₹' : (userSettings.currency === 'USD' ? '$' : userSettings.currency);
+    return `${sym}${parseFloat(val).toFixed(2)}`;
+  };
+
   const updateQuickStats = (entries) => {
     let totalSpent = 0;
     
