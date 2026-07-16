@@ -271,8 +271,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       html += `
         <div class="card app-card mb-3 border-0">
           <div class="card-body p-3 d-flex align-items-center">
-            <div class="bg-secondary bg-opacity-25 text-white rounded d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-size: 1.2rem; font-weight: 500;">
-              ${initial}
+            <div class="bg-primary bg-opacity-10 text-primary rounded d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+              <i class="bi bi-fuel-pump-fill fs-4"></i>
             </div>
             <div class="flex-grow-1">
               <div class="d-flex align-items-baseline mb-1">
