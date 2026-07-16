@@ -380,6 +380,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  // Handle carousel slide to resize Chart.js charts
+  const analyticsCarouselEl = document.getElementById('analyticsCarousel');
+  if (analyticsCarouselEl) {
+    analyticsCarouselEl.addEventListener('slid.bs.carousel', () => {
+      if (priceChart) priceChart.resize();
+      if (runningCostChart) runningCostChart.resize();
+      if (efficiencyChart) efficiencyChart.resize();
+    });
+  }
+
   // Initialize
   await fetchSettings();
   fetchEntries();

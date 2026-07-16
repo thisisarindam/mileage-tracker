@@ -77,7 +77,7 @@
       <h4 class="mb-1">Analytics</h4>
       <p class="text-muted small mb-3">Swipe to see detailed trends</p>
       
-      <div id="analyticsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+      <div id="analyticsCarousel" class="carousel slide">
         <!-- Indicators -->
         <div class="carousel-indicators" style="bottom: -40px;">
           <button type="button" data-bs-target="#analyticsCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -94,7 +94,7 @@
                   <h5 class="mb-0 text-white">Fuel Price Trend</h5>
                   <span class="badge bg-secondary bg-opacity-25 text-light px-3 py-2 rounded-pill" id="price-avg-badge">Avg: --</span>
                 </div>
-                <div style="height: 200px;">
+                <div style="height: 200px; position: relative; width: 100%;">
                   <canvas id="priceTrendChart"></canvas>
                 </div>
                 <hr class="border-secondary opacity-25 mt-4 mb-3">
@@ -124,7 +124,7 @@
                   <h5 class="mb-0 text-white">Running Cost</h5>
                   <span class="badge bg-secondary bg-opacity-25 text-light px-3 py-2 rounded-pill" id="running-cost-avg-badge">Avg: --</span>
                 </div>
-                <div style="height: 200px;">
+                <div style="height: 200px; position: relative; width: 100%;">
                   <canvas id="runningCostChart"></canvas>
                 </div>
                 <hr class="border-secondary opacity-25 mt-4 mb-3">
@@ -154,7 +154,7 @@
                   <h5 class="mb-0 text-white">Efficiency Trend</h5>
                   <span class="badge bg-secondary bg-opacity-25 text-success px-3 py-2 rounded-pill" id="efficiency-avg-badge">Avg: --</span>
                 </div>
-                <div style="height: 200px;">
+                <div style="height: 200px; position: relative; width: 100%;">
                   <canvas id="efficiencyChart"></canvas>
                 </div>
                 <hr class="border-secondary opacity-25 mt-4 mb-3">
