@@ -98,6 +98,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       },
       options: { 
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           legend: { display: false }
         },
@@ -131,6 +132,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       },
       options: { 
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           legend: { display: false }
         },
