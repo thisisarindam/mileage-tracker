@@ -158,7 +158,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const updateQuickStats = (entries) => {
     let totalSpent = 0;
-    let totalLitres = 0;
     
     if (!entries || entries.length === 0) {
       document.getElementById('stat-total-spent').innerText = formatCurrency(0);
@@ -167,19 +166,31 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    let minOdo = Number.MAX_VALUE;
-    let maxOdo = 0;
-
     entries.forEach(e => {
       totalSpent += parseFloat(e.total_cost);
-      totalLitres += parseFloat(e.litres);
-      if (parseFloat(e.odometer_km) > maxOdo) maxOdo = parseFloat(e.odometer_km);
-      if (parseFloat(e.odometer_km) < minOdo) minOdo = parseFloat(e.odometer_km);
     });
+    
+    document.getElementById('stat-total-spent').innerText = formatCurrency(totalSpent);
 
+    if (entries.length < 2) {
+      document.getElementById('stat-total-distance').innerText = `0 ${userSettings.unit_system === 'imperial' ? 'mi' : 'km'}`;
+      document.getElementById('stat-avg-efficiency').innerText = '--';
+      return;
+    }
+
+    // Sort entries by odometer ascending
+    const sorted = [...entries].sort((a, b) => parseFloat(a.odometer_km) - parseFloat(b.odometer_km));
+    
+    const minOdo = parseFloat(sorted[0].odometer_km);
+    const maxOdo = parseFloat(sorted[sorted.length - 1].odometer_km);
     const totalDistance = maxOdo - minOdo;
 
-    document.getElementById('stat-total-spent').innerText = formatCurrency(totalSpent);
+    // Fuel consumed is sum of all fill-ups EXCEPT the first one (baseline)
+    let totalLitres = 0;
+    for (let i = 1; i < sorted.length; i++) {
+      totalLitres += parseFloat(sorted[i].litres);
+    }
+
     document.getElementById('stat-total-distance').innerText = `${totalDistance.toLocaleString()} ${userSettings.unit_system === 'imperial' ? 'mi' : 'km'}`;
     
     if (totalDistance > 0 && totalLitres > 0) {
