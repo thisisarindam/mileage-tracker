@@ -299,42 +299,57 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 
   const updateQuickStats = (entries) => {
-    let totalSpent = 0;
-    
     if (!entries || entries.length === 0) {
-      document.getElementById('stat-total-spent').innerText = formatCurrency(0);
-      document.getElementById('stat-total-distance').innerText = `0 ${userSettings.unit_system === 'imperial' ? 'mi' : 'km'}`;
+      document.getElementById('stat-monthly-spent').innerText = formatCurrency(0);
+      document.getElementById('stat-monthly-distance').innerText = `0 ${userSettings.unit_system === 'imperial' ? 'mi' : 'km'}`;
       document.getElementById('stat-avg-efficiency').innerText = '--';
       return;
     }
 
-    entries.forEach(e => {
-      totalSpent += parseFloat(e.total_cost);
-    });
-    
-    document.getElementById('stat-total-spent').innerText = formatCurrency(totalSpent);
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
 
-    if (entries.length < 2) {
-      document.getElementById('stat-total-distance').innerText = `0 ${userSettings.unit_system === 'imperial' ? 'mi' : 'km'}`;
-      document.getElementById('stat-avg-efficiency').innerText = '--';
-      return;
-    }
-
-    // Sort entries by odometer ascending
+    // Sort entries by odometer ascending to calculate distances
     const sorted = [...entries].sort((a, b) => parseFloat(a.odometer_km) - parseFloat(b.odometer_km));
     
+    let monthlySpent = 0;
+    let monthlyDistance = 0;
+
+    for (let i = 0; i < sorted.length; i++) {
+      const entry = sorted[i];
+      const entryDate = new Date(entry.entry_date);
+      
+      if (entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear) {
+        monthlySpent += parseFloat(entry.total_cost);
+        
+        // Calculate distance since previous fill-up
+        if (i > 0) {
+          const prevOdo = parseFloat(sorted[i-1].odometer_km);
+          const currOdo = parseFloat(entry.odometer_km);
+          monthlyDistance += (currOdo - prevOdo);
+        }
+      }
+    }
+
+    document.getElementById('stat-monthly-spent').innerText = formatCurrency(monthlySpent);
+    document.getElementById('stat-monthly-distance').innerText = `${monthlyDistance.toLocaleString()} ${userSettings.unit_system === 'imperial' ? 'mi' : 'km'}`;
+
+    // Average Efficiency (Lifetime)
+    if (entries.length < 2) {
+      document.getElementById('stat-avg-efficiency').innerText = '--';
+      return;
+    }
+
     const minOdo = parseFloat(sorted[0].odometer_km);
     const maxOdo = parseFloat(sorted[sorted.length - 1].odometer_km);
     const totalDistance = maxOdo - minOdo;
 
-    // Fuel consumed is sum of all fill-ups EXCEPT the first one (baseline)
     let totalLitres = 0;
     for (let i = 1; i < sorted.length; i++) {
       totalLitres += parseFloat(sorted[i].litres);
     }
 
-    document.getElementById('stat-total-distance').innerText = `${totalDistance.toLocaleString()} ${userSettings.unit_system === 'imperial' ? 'mi' : 'km'}`;
-    
     if (totalDistance > 0 && totalLitres > 0) {
       if (userSettings.unit_system === 'imperial') {
         const mpg = totalDistance / (totalLitres * 0.264172); // rough conversion
