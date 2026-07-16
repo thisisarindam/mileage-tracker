@@ -274,15 +274,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="bg-primary bg-opacity-10 text-primary rounded d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
               <i class="bi bi-fuel-pump-fill fs-4"></i>
             </div>
-            <div class="flex-grow-1">
-              <div class="d-flex align-items-baseline mb-1">
-                <span class="fw-bold text-white fs-5 me-2">${sym}${Math.round(entry.total_cost)}</span>
-                <span class="text-light small">${station}</span>
+              <div class="flex-grow-1">
+                <div class="d-flex align-items-baseline mb-1">
+                  <span class="fw-bold fs-5 me-2">${sym}${Math.round(entry.total_cost)}</span>
+                  <span class="text-muted small">${station}</span>
+                </div>
+                <div class="text-muted small">
+                  <i class="bi bi-calendar3 me-1"></i> ${dateStr}
+                </div>
               </div>
-              <div class="text-muted small">
-                <i class="bi bi-calendar3 me-1"></i> ${dateStr}
-              </div>
-            </div>
             ${effBadgeHtml}
           </div>
         </div>

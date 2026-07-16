@@ -215,8 +215,8 @@ document.addEventListener('DOMContentLoaded', async () => {
               </div>
               <div class="flex-grow-1">
                 <div class="d-flex align-items-baseline mb-1">
-                  <span class="fw-bold text-white fs-5 me-2">${formatCurrency(entry.total_cost)}</span>
-                  <span class="text-light small">${station}</span>
+                  <span class="fw-bold fs-5 me-2">${formatCurrency(entry.total_cost)}</span>
+                  <span class="text-muted small">${station}</span>
                 </div>
                 <div class="text-muted small">
                   <i class="bi bi-calendar3 me-1"></i> ${dateStr} &bull; ${parseFloat(entry.odometer_km).toLocaleString()}${distUnit}
