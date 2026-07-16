@@ -314,7 +314,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const sorted = [...entries].sort((a, b) => parseFloat(a.odometer_km) - parseFloat(b.odometer_km));
     
     let monthlySpent = 0;
-    let monthlyDistance = 0;
 
     for (let i = 0; i < sorted.length; i++) {
       const entry = sorted[i];
@@ -322,18 +321,29 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       if (entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear) {
         monthlySpent += parseFloat(entry.total_cost);
-        
-        // Calculate distance since previous fill-up
-        if (i > 0) {
-          const prevOdo = parseFloat(sorted[i-1].odometer_km);
-          const currOdo = parseFloat(entry.odometer_km);
-          monthlyDistance += (currOdo - prevOdo);
-        }
       }
     }
 
     document.getElementById('stat-monthly-spent').innerText = formatCurrency(monthlySpent);
-    document.getElementById('stat-monthly-distance').innerText = `${monthlyDistance.toLocaleString()} ${userSettings.unit_system === 'imperial' ? 'mi' : 'km'}`;
+    
+    // Average Monthly Distance (Lifetime calculation)
+    if (sorted.length < 2) {
+      document.getElementById('stat-monthly-distance').innerText = `0 ${userSettings.unit_system === 'imperial' ? 'mi' : 'km'}`;
+    } else {
+      const firstEntryDate = new Date(sorted[0].entry_date);
+      const lastEntryDate = new Date(sorted[sorted.length - 1].entry_date);
+      
+      let monthsSpan = (lastEntryDate.getFullYear() - firstEntryDate.getFullYear()) * 12;
+      monthsSpan += (lastEntryDate.getMonth() - firstEntryDate.getMonth());
+      monthsSpan = Math.max(1, monthsSpan + 1); // at least 1 month
+      
+      const minOdoDist = parseFloat(sorted[0].odometer_km);
+      const maxOdoDist = parseFloat(sorted[sorted.length - 1].odometer_km);
+      const totalDistanceDist = maxOdoDist - minOdoDist;
+      const avgMonthlyDistance = totalDistanceDist / monthsSpan;
+      
+      document.getElementById('stat-monthly-distance').innerText = `${Math.round(avgMonthlyDistance).toLocaleString()} ${userSettings.unit_system === 'imperial' ? 'mi' : 'km'}`;
+    }
 
     // Average Efficiency (Lifetime)
     if (entries.length < 2) {
