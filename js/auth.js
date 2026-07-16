@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       submitBtn.disabled = true;
       if (isSignUpMode) {
+        let userAlreadyExists = false;
         const { data, error } = await supabaseClient.auth.signUp({ 
           email, 
           password,
@@ -73,8 +74,37 @@ document.addEventListener('DOMContentLoaded', async () => {
             emailRedirectTo: window.location.href
           }
         });
-        if (error) throw error;
-        if (data.session) {
+
+        if (error) {
+          if (error.message.toLowerCase().includes('already registered')) {
+            userAlreadyExists = true;
+          } else {
+            throw error;
+          }
+        } else if (data?.user?.identities?.length === 0) {
+          // Email enumeration protection is ON and user already exists
+          userAlreadyExists = true;
+        }
+
+        if (userAlreadyExists) {
+          // Resend verification email
+          const { error: resendError } = await supabaseClient.auth.resend({
+            type: 'signup',
+            email,
+            options: { emailRedirectTo: window.location.href }
+          });
+          
+          if (resendError) {
+            // Check if they are actually already verified
+            if (resendError.message.toLowerCase().includes('already confirmed') || resendError.message.toLowerCase().includes('already verified') || resendError.status === 422) {
+              showAlert('This account is already verified! Please switch to Sign In.', 'info');
+            } else {
+              throw resendError;
+            }
+          } else {
+            showAlert('You are already registered but unverified. A new verification link has been sent!', 'success');
+          }
+        } else if (data?.session) {
           window.location.href = 'dashboard.html';
         } else {
           showAlert('Please check your email to confirm your account.', 'success');
