@@ -54,3 +54,13 @@ window.toggleTheme = () => {
     applyTheme();
   }
 };
+
+// Inject animated background orbs
+document.addEventListener('DOMContentLoaded', () => {
+  const orb1 = document.createElement('div');
+  orb1.className = 'bg-orb orb-1';
+  const orb2 = document.createElement('div');
+  orb2.className = 'bg-orb orb-2';
+  document.body.prepend(orb1);
+  document.body.prepend(orb2);
+});
