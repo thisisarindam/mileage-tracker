@@ -11,6 +11,34 @@ document.addEventListener('DOMContentLoaded', async () => {
   const addEntryModalEl = document.getElementById('addEntryModal');
   const addEntryModal = new bootstrap.Modal(addEntryModalEl);
   const saveEntryBtn = document.getElementById('save-entry-btn');
+
+  // Overlay Elements
+  const entryOverlay = document.getElementById('entry-selection-overlay');
+  const btnShowOverlay = document.getElementById('btn-show-entry-overlay');
+  const btnCloseOverlay = document.getElementById('btn-close-entry-overlay');
+  const btnSelectFuel = document.getElementById('btn-select-fuel');
+
+  // Overlay Logic
+  if (btnShowOverlay) {
+    btnShowOverlay.addEventListener('click', () => {
+      entryOverlay.classList.add('active');
+    });
+  }
+
+  if (btnCloseOverlay) {
+    btnCloseOverlay.addEventListener('click', () => {
+      entryOverlay.classList.remove('active');
+    });
+  }
+
+  if (btnSelectFuel) {
+    btnSelectFuel.addEventListener('click', (e) => {
+      e.preventDefault();
+      entryOverlay.classList.remove('active');
+      addEntryModal.show();
+    });
+  }
+
   const modalAlertContainer = document.getElementById('modal-alert-container');
   let priceChart = null;
   let runningCostChart = null;

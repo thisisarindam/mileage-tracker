@@ -19,7 +19,7 @@
         <button class="btn btn-outline-secondary shadow-sm me-2 rounded-circle" onclick="window.toggleTheme()" style="width: 42px; height: 42px; padding: 0;" aria-label="Toggle Theme">
           <i class="bi bi-circle-half fs-5"></i>
         </button>
-        <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addEntryModal">
+        <button class="btn btn-primary shadow-sm" id="btn-show-entry-overlay">
           <i class="bi bi-plus-lg me-1"></i> Add Entry
         </button>
       </div>
@@ -243,6 +243,32 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
           <button type="submit" form="add-entry-form" class="btn btn-primary" id="save-entry-btn">Save Entry</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Entry Selection Overlay -->
+  <div class="entry-overlay" id="entry-selection-overlay">
+    <button class="entry-overlay-close" id="btn-close-entry-overlay"><i class="bi bi-x-lg"></i></button>
+    <div class="entry-overlay-content">
+      <h3 class="text-white text-center mb-4 fw-bold">What would you like to add?</h3>
+      <div class="row g-4">
+        <div class="col-6">
+          <a href="#" class="entry-btn-card text-decoration-none" id="btn-select-fuel">
+            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+              <i class="bi bi-fuel-pump-fill fs-3"></i>
+            </div>
+            <h5 class="fw-bold mb-0">Fuel Entry</h5>
+          </a>
+        </div>
+        <div class="col-6">
+          <a href="history.html?tab=maintenance&action=add" class="entry-btn-card text-decoration-none">
+            <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+              <i class="bi bi-tools fs-3"></i>
+            </div>
+            <h5 class="fw-bold mb-0">Service Log</h5>
+          </a>
         </div>
       </div>
     </div>
