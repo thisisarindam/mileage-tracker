@@ -77,6 +77,7 @@ body {
   border-radius: 20px !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05) !important;
   animation: springFadeUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1) both;
+  color: var(--text-main) !important;
 }
 
 /* Stagger card animations */
@@ -171,6 +172,10 @@ body {
 /* Typography refinements */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
+}
+
+.text-main {
+  color: var(--text-main) !important;
 }
 
 /* List Groups (Settings) */
