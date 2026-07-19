@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
       savingsTitle.innerText = "On Track";
       savingsSubtitle.innerText = `Spending is exactly the same as previous month.`;
-      savingsIcon.className = "bi bi-dash fs-5 text-white";
+      savingsIcon.className = "bi bi-dash fs-5 text-muted";
     }
 
     // Monthly Comparison
