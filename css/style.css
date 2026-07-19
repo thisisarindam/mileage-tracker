@@ -210,3 +210,11 @@ h1, h2, h3, h4, h5, h6 {
 .modal-footer {
   border-top: 1px solid var(--glass-border);
 }
+
+/* Theme Transition */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.8s; }
+::view-transition-old(root) { animation: none; z-index: 1; }
+::view-transition-new(root) { animation: clipReveal 0.8s cubic-bezier(0.25, 1, 0.3, 1) forwards; z-index: 9999; }
+[data-theme="dark"]::view-transition-old(root) { z-index: 9999; animation: clipReveal 0.8s cubic-bezier(0.25, 1, 0.3, 1) reverse forwards; }
+[data-theme="dark"]::view-transition-new(root) { z-index: 1; animation: none; }
+@keyframes clipReveal { 0% { clip-path: circle(0% at 85% 10%); } 100% { clip-path: circle(150% at 85% 10%); } }

@@ -41,7 +41,16 @@ initTheme();
 window.toggleTheme = () => {
   const currentTheme = document.documentElement.getAttribute('data-bs-theme');
   const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-bs-theme', newTheme);
-  document.documentElement.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
+  
+  const applyTheme = () => {
+    document.documentElement.setAttribute('data-bs-theme', newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
+
+  if (document.startViewTransition) {
+    document.startViewTransition(applyTheme);
+  } else {
+    applyTheme();
+  }
 };
