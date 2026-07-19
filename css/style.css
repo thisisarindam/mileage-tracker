@@ -293,7 +293,6 @@ h1, h2, h3, h4, h5, h6 {
 .bg-orb {
   position: fixed;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.8);
   opacity: var(--orb-opacity, 0.1);
   filter: blur(80px);
   z-index: -1;
@@ -303,7 +302,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 [data-theme="light"] .bg-orb {
-  background: rgba(255, 255, 255, 1);
   opacity: var(--orb-opacity, 0.8);
 }
 
@@ -314,6 +312,7 @@ h1, h2, h3, h4, h5, h6 {
   min-height: 300px;
   top: -10%;
   left: -10%;
+  background: #4580ff;
   animation: floatOrb1 calc(25s / var(--orb-speed, 1.0)) infinite ease-in-out alternate;
 }
 
@@ -324,6 +323,7 @@ h1, h2, h3, h4, h5, h6 {
   min-height: 400px;
   bottom: -15%;
   right: -10%;
+  background: #00c767;
   animation: floatOrb2 calc(30s / var(--orb-speed, 1.0)) infinite ease-in-out alternate;
 }
 
