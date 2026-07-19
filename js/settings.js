@@ -11,6 +11,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   const saveBtn = document.getElementById('save-btn');
   const unitInput = document.getElementById('unit_system');
   const currencyInput = document.getElementById('currency');
+  
+  // Appearance Elements
+  const orbVisibilityInput = document.getElementById('orb_visibility');
+  const orbVisibilityVal = document.getElementById('orb_visibility_val');
+  const orbSpeedInput = document.getElementById('orb_speed');
+  const orbSpeedVal = document.getElementById('orb_speed_val');
+
+  // Live preview for sliders
+  orbVisibilityInput.addEventListener('input', (e) => {
+    const val = e.target.value;
+    orbVisibilityVal.innerText = `${val}%`;
+    document.documentElement.style.setProperty('--orb-opacity', val / 100);
+  });
+
+  orbSpeedInput.addEventListener('input', (e) => {
+    const val = parseFloat(e.target.value).toFixed(1);
+    orbSpeedVal.innerText = `${val}x`;
+    document.documentElement.style.setProperty('--orb-speed', val);
+  });
 
   const showAlert = (message, type = 'danger') => {
     alertContainer.innerHTML = `
@@ -38,6 +57,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (data) {
         unitInput.value = data.unit_system;
         currencyInput.value = data.currency;
+        
+        if (data.orb_visibility !== null && data.orb_visibility !== undefined) {
+          orbVisibilityInput.value = data.orb_visibility;
+          orbVisibilityVal.innerText = `${data.orb_visibility}%`;
+        }
+        
+        if (data.orb_speed !== null && data.orb_speed !== undefined) {
+          orbSpeedInput.value = data.orb_speed;
+          orbSpeedVal.innerText = `${parseFloat(data.orb_speed).toFixed(1)}x`;
+        }
       }
     } catch (err) {
       console.error('Error fetching settings:', err.message);
@@ -54,7 +83,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const payload = {
       user_id: user.id,
       unit_system: unitInput.value,
-      currency: currencyInput.value
+      currency: currencyInput.value,
+      orb_visibility: parseFloat(orbVisibilityInput.value),
+      orb_speed: parseFloat(orbSpeedInput.value)
     };
 
     try {

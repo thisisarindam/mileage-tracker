@@ -294,16 +294,17 @@ h1, h2, h3, h4, h5, h6 {
   position: fixed;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.8);
-  opacity: 0.1;
+  opacity: var(--orb-opacity, 0.1);
   filter: blur(80px);
   z-index: -1;
   pointer-events: none;
   will-change: transform;
+  transition: opacity 0.3s ease;
 }
 
 [data-theme="light"] .bg-orb {
   background: rgba(255, 255, 255, 1);
-  opacity: 0.8; /* Make it more visible in light mode as bright spots */
+  opacity: var(--orb-opacity, 0.8);
 }
 
 .bg-orb.orb-1 {
@@ -313,7 +314,7 @@ h1, h2, h3, h4, h5, h6 {
   min-height: 300px;
   top: -10%;
   left: -10%;
-  animation: floatOrb1 25s infinite ease-in-out alternate;
+  animation: floatOrb1 calc(25s / var(--orb-speed, 1.0)) infinite ease-in-out alternate;
 }
 
 .bg-orb.orb-2 {
@@ -323,7 +324,7 @@ h1, h2, h3, h4, h5, h6 {
   min-height: 400px;
   bottom: -15%;
   right: -10%;
-  animation: floatOrb2 30s infinite ease-in-out alternate;
+  animation: floatOrb2 calc(30s / var(--orb-speed, 1.0)) infinite ease-in-out alternate;
 }
 
 @keyframes floatOrb1 {

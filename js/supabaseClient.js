@@ -63,4 +63,27 @@ document.addEventListener('DOMContentLoaded', () => {
   orb2.className = 'bg-orb orb-2';
   document.body.prepend(orb1);
   document.body.prepend(orb2);
+  
+  applyUserSettings();
 });
+
+// Fetch and apply user settings globally (e.g. appearance sliders)
+async function applyUserSettings() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (session) {
+    const { data, error } = await supabaseClient
+      .from('user_settings')
+      .select('orb_visibility, orb_speed')
+      .eq('user_id', session.user.id)
+      .single();
+      
+    if (data && !error) {
+      if (data.orb_visibility !== null && data.orb_visibility !== undefined) {
+        document.documentElement.style.setProperty('--orb-opacity', data.orb_visibility / 100);
+      }
+      if (data.orb_speed !== null && data.orb_speed !== undefined) {
+        document.documentElement.style.setProperty('--orb-speed', data.orb_speed);
+      }
+    }
+  }
+}
